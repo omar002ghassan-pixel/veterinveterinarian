@@ -1,0 +1,1561 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>دليل الأدوية والمطاعيم البيطرية المعتمد | VetPharm</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts (Cairo & Tajawal) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;800&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome 6 Icons CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        medical: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            500: '#0284c7',
+                            600: '#0369a1',
+                            700: '#075985',
+                            800: '#0c4a6e',
+                        },
+                        vetTeal: {
+                            500: '#0d9488',
+                            600: '#0d9488',
+                            700: '#0f766e',
+                        }
+                    },
+                    fontFamily: {
+                        cairo: ['Cairo', 'sans-serif'],
+                        tajawal: ['Tajawal', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Cairo', 'Tajawal', sans-serif;
+            background-color: #f8fafc;
+            color: #1e293b;
+        }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+        /* Printable modal stylesheet */
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+            #printableArea, #printableArea * {
+                visibility: visible;
+            }
+            #printableArea {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                padding: 20px;
+            }
+            .no-print {
+                display: none !important;
+            }
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col bg-slate-50 text-slate-800 antialiased selection:bg-sky-100 selection:text-sky-700">
+
+    <!-- Toast Notification Box -->
+    <div id="toast" class="fixed bottom-5 left-5 z-50 transform translate-y-20 opacity-0 transition-all duration-300 ease-in-out bg-slate-900 text-white px-5 py-3 rounded-xl shadow-2xl flex items-center gap-3 border border-slate-700 pointer-events-none">
+        <i id="toastIcon" class="fa-solid fa-circle-check text-emerald-400 text-lg"></i>
+        <span id="toastMessage" class="text-sm font-medium">تمت العملية بنجاح</span>
+    </div>
+
+    <!-- Top Navigation Header -->
+    <header class="bg-gradient-to-r from-slate-900 via-medical-800 to-slate-900 text-white sticky top-0 z-30 shadow-lg border-b border-sky-900/50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-20">
+                <!-- Logo & Title -->
+                <div class="flex items-center gap-3">
+                    <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-sky-400 to-teal-400 flex items-center justify-center text-white shadow-md shadow-sky-500/20 font-extrabold text-xl">
+                        <i class="fa-solid fa-staff-snake text-2xl"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-lg sm:text-2xl font-bold tracking-tight text-white flex items-center gap-2">
+                            <span>دليل الأدوية والمطاعيم البيطرية</span>
+                        </h1>
+                        <p class="text-xs text-sky-200/80 font-light">مرجع الأمراض والمطاعيم والأدوية وطرق الإعطاء والتراكيز للدواجن والأبقار والأغنام</p>
+                    </div>
+                </div>
+
+                <!-- Action Toolbar Buttons -->
+                <div class="flex items-center gap-2 sm:gap-3">
+                    <button onclick="openDosageModal()" class="px-3.5 py-2 sm:px-4 sm:py-2.5 rounded-xl bg-teal-500/20 hover:bg-teal-500/30 text-teal-200 border border-teal-500/30 transition text-xs sm:text-sm font-medium flex items-center gap-2">
+                        <i class="fa-solid fa-calculator text-teal-400"></i>
+                        <span class="hidden md:inline">حاسبة الجرعات</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-6">
+
+        <!-- Navigation Tabs (Drugs & Vaccines vs Diseases) -->
+        <div class="bg-white p-1.5 rounded-2xl border border-slate-200/80 shadow-sm flex items-center max-w-lg mx-auto">
+            <button id="tabDrugsBtn" onclick="switchMainTab('drugs')" class="flex-1 py-2.5 px-4 rounded-xl text-sm font-bold transition-all flex items-center justify-center gap-2 bg-sky-600 text-white shadow-md shadow-sky-500/20">
+                <i class="fa-solid fa-syringe"></i>
+                <span>الأدوية والمطاعيم</span>
+            </button>
+            <button id="tabDiseasesBtn" onclick="switchMainTab('diseases')" class="flex-1 py-2.5 px-4 rounded-xl text-sm font-bold transition-all flex items-center justify-center gap-2 text-slate-600 hover:bg-slate-50">
+                <i class="fa-solid fa-virus"></i>
+                <span>دليل الأمراض والمطاعيم والعلاج</span>
+            </button>
+        </div>
+
+        <!-- ==================== VIEW 1: DRUGS & VACCINES SECTION ==================== -->
+        <div id="drugsView" class="space-y-6">
+            <!-- Search & Filter Controls Card -->
+            <section class="bg-white rounded-2xl p-4 sm:p-6 border border-slate-200/80 shadow-sm space-y-4">
+                
+                <!-- Live Search Bar -->
+                <div class="relative">
+                    <i class="fa-solid fa-magnifying-glass absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 text-lg"></i>
+                    <input type="text" id="searchInput" oninput="renderDrugs()" placeholder="ابحث باسم المطعوم أو الدواء أو المادة الفعالة أو التركيز أو طريقة الإعطاء..." 
+                           class="w-full pr-12 pl-10 py-3.5 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-sky-500/30 focus:border-sky-500 text-sm sm:text-base text-slate-800 placeholder-slate-400 transition">
+                    <button onclick="clearSearch()" id="clearSearchBtn" class="hidden absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 p-1">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+
+                <!-- Categories Filter Pills -->
+                <div>
+                    <label class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 block">التصنيف الطبي:</label>
+                    <div id="categoryPills" class="flex flex-wrap gap-2 text-xs sm:text-sm">
+                        <!-- Dynamic Pill Items rendered via JS -->
+                    </div>
+                </div>
+
+                <!-- Target Species Filter Pills (Restricted to Poultry, Cattle, Sheep) -->
+                <div>
+                    <label class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 block">الحيوانات المستهدفة:</label>
+                    <div id="speciesPills" class="flex flex-wrap gap-2 text-xs sm:text-sm">
+                        <!-- Dynamic Species Pills rendered via JS -->
+                    </div>
+                </div>
+
+                <!-- Secondary Options Row -->
+                <div class="pt-2 border-t border-slate-100 flex flex-wrap items-center justify-between gap-3 text-xs text-slate-500">
+                    <div class="flex items-center gap-2">
+                        <button id="favoriteFilterToggle" onclick="toggleFavoriteFilter()" class="px-3 py-1.5 rounded-lg border border-slate-200 hover:border-amber-400 hover:text-amber-600 transition flex items-center gap-1.5 font-medium">
+                            <i class="fa-solid fa-star text-amber-400"></i>
+                            <span>عرض المفضلة فقط</span>
+                        </button>
+                        <span id="resultsCount" class="font-medium text-slate-600">جارٍ تحميل البيانات...</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span>ترتيب حسب:</span>
+                        <select id="sortSelect" onchange="renderDrugs()" class="bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1 text-slate-700 focus:outline-none focus:ring-1 focus:ring-sky-500">
+                            <option value="nameAsc">الاسم (أ - ي)</option>
+                            <option value="nameDesc">الاسم (ي - أ)</option>
+                            <option value="source">الجهة المرجعية الرسمية</option>
+                        </select>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Medications & Vaccines Grid Section -->
+            <section>
+                <div id="drugsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
+                    <!-- Cards dynamically injected here -->
+                </div>
+
+                <!-- Empty State Placeholder -->
+                <div id="emptyState" class="hidden text-center py-16 bg-white rounded-2xl border border-dashed border-slate-300">
+                    <div class="w-16 h-16 bg-sky-50 text-sky-500 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl">
+                        <i class="fa-solid fa-prescription-bottle-medical"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-slate-800 mb-1">لم يتم العثور على نتائج مطابقة</h3>
+                    <p class="text-sm text-slate-500 max-w-md mx-auto mb-5">تأكد من كتابة الاسم أو أعد ضبط فلاتر البحث.</p>
+                    <button onclick="resetFilters()" class="px-4 py-2 bg-sky-500 hover:bg-sky-600 text-white font-medium text-sm rounded-xl transition">
+                        إعادة ضبط الفلاتر
+                    </button>
+                </div>
+            </section>
+        </div>
+
+        <!-- ==================== VIEW 2: DISEASES SECTION ==================== -->
+        <div id="diseasesView" class="hidden space-y-6">
+            <!-- Diseases Search & Filter Card -->
+            <section class="bg-white rounded-2xl p-4 sm:p-6 border border-slate-200/80 shadow-sm space-y-4">
+                <div class="relative">
+                    <i class="fa-solid fa-magnifying-glass absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 text-lg"></i>
+                    <input type="text" id="diseaseSearchInput" oninput="renderDiseases()" placeholder="ابحث عن المرض (نيوكاسل، التهاب الشعب المعدي، جمبورو، الحمى القلاعية، طاعون المجترات الصغيرة، جدري الأغنام، الجلد العقدي)..." 
+                           class="w-full pr-12 pl-10 py-3.5 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-rose-500/30 focus:border-rose-500 text-sm sm:text-base text-slate-800 placeholder-slate-400 transition">
+                </div>
+
+                <div>
+                    <label class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 block">تصفية الأمراض حسب النوع:</label>
+                    <div id="diseaseSpeciesPills" class="flex flex-wrap gap-2 text-xs sm:text-sm">
+                        <!-- Rendered via JS -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- Diseases Grid -->
+            <section>
+                <div id="diseasesGrid" class="grid grid-cols-1 md:grid-cols-2 gap-5 sm:gap-6">
+                    <!-- Disease cards dynamically injected here -->
+                </div>
+
+                <div id="diseaseEmptyState" class="hidden text-center py-16 bg-white rounded-2xl border border-dashed border-slate-300">
+                    <div class="w-16 h-16 bg-rose-50 text-rose-500 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl">
+                        <i class="fa-solid fa-stethoscope"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-slate-800 mb-1">لم يتم العثور على أمراض مطابقة</h3>
+                    <p class="text-sm text-slate-500 max-w-md mx-auto">جرب البحث بكلمة أخرى أو أضف مرضاً جديداً للدليل.</p>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-slate-900 text-slate-400 text-xs py-8 border-t border-slate-800 mt-12">
+        <div class="max-w-7xl mx-auto px-4 text-center space-y-2">
+            <p class="font-medium text-slate-300">دليل الأدوية والمطاعيم البيطرية (VetPharm) — مرجع الدواجن والأبقار والأغنام من المصادر الرسمية (WOAH • FDA • EMA • FAO)</p>
+            <p class="text-slate-500">تنويه مهني: تُراعى دائماً تعليمات النشرة المعتمدة للمنتج والأنظمة البيطرية المحلية وفترات سحب اللحوم والحليب والبيض.</p>
+        </div>
+    </footer>
+
+    <!-- ==================== MODALS SECTION ==================== -->
+
+    <!-- Modal 1: Detailed View Modal -->
+    <div id="detailModal" class="fixed inset-0 z-50 hidden overflow-y-auto bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4">
+        <div class="bg-white rounded-3xl max-w-3xl w-full max-h-[92vh] flex flex-col shadow-2xl border border-slate-100 overflow-hidden transform transition-all">
+            
+            <!-- Modal Header -->
+            <div id="modalHeader" class="bg-gradient-to-r from-medical-800 to-sky-900 text-white p-5 sm:p-6 relative flex-shrink-0">
+                <button onclick="closeDetailModal()" class="absolute top-4 left-4 w-9 h-9 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+                <div class="flex items-start gap-4 pr-2">
+                    <div id="modalIconBox" class="w-14 h-14 rounded-2xl bg-white/10 backdrop-blur border border-white/20 flex items-center justify-center text-white text-2xl flex-shrink-0">
+                        <i class="fa-solid fa-syringe"></i>
+                    </div>
+                    <div>
+                        <div class="flex items-center gap-2 flex-wrap mb-1">
+                            <span id="modalCategoryBadge" class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-sky-400/20 text-sky-200 border border-sky-300/30">مطاعيم</span>
+                            <span id="modalFormBadge" class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-teal-400/20 text-teal-200 border border-teal-300/30">حقن</span>
+                        </div>
+                        <h2 id="modalTradeName" class="text-2xl sm:text-3xl font-extrabold text-white">اسم المادة / المطعوم</h2>
+                        <p id="modalScientificName" class="text-sm sm:text-base text-sky-200 font-mono tracking-wide mt-0.5">Active / Antigen</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal Printable Body -->
+            <div id="printableArea" class="p-5 sm:p-6 overflow-y-auto space-y-5 flex-grow text-slate-700 text-sm leading-relaxed">
+                
+                <!-- Quick Info Bar -->
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 bg-slate-50 p-3.5 rounded-2xl border border-slate-100">
+                    <div>
+                        <span class="text-xs text-slate-400 block font-medium">الجهة المرجعية الرسمية</span>
+                        <span id="modalSource" class="font-bold text-emerald-800 text-sm flex items-center gap-1.5 mt-0.5">WOAH</span>
+                    </div>
+                    <div>
+                        <span class="text-xs text-slate-400 block font-medium">التركيز / العيار الرسمي</span>
+                        <span id="modalConcentration" class="font-bold text-slate-800 text-sm mt-0.5 block">غير محدد</span>
+                    </div>
+                    <div>
+                        <span class="text-xs text-slate-400 block font-medium">الحيوانات المستهدفة</span>
+                        <div id="modalSpeciesList" class="flex flex-wrap gap-1 mt-1"></div>
+                    </div>
+                </div>
+
+                <!-- Administration Route -->
+                <div class="space-y-2">
+                    <h3 class="text-base font-bold text-slate-900 flex items-center gap-2 border-r-4 border-indigo-500 pr-2.5">
+                        <i class="fa-solid fa-route text-indigo-600"></i>
+                        <span>طريقة الإعطاء وموضع التطبيق</span>
+                    </h3>
+                    <div id="modalRoute" class="bg-indigo-50/50 p-4 rounded-2xl border border-indigo-100 text-slate-700 leading-relaxed text-sm font-medium"></div>
+                </div>
+
+                <!-- Indications / Benefits -->
+                <div class="space-y-2">
+                    <h3 class="text-base font-bold text-slate-900 flex items-center gap-2 border-r-4 border-sky-500 pr-2.5">
+                        <i class="fa-solid fa-kit-medical text-sky-600"></i>
+                        <span>المرض المستهدف ودواعي الاستعمال</span>
+                    </h3>
+                    <p id="modalBenefits" class="bg-sky-50/50 p-4 rounded-2xl border border-sky-100 text-slate-700 leading-relaxed text-sm"></p>
+                </div>
+
+                <!-- Dosage & Regimen -->
+                <div class="space-y-2">
+                    <h3 class="text-base font-bold text-slate-900 flex items-center gap-2 border-r-4 border-teal-500 pr-2.5">
+                        <i class="fa-solid fa-list-check text-teal-600"></i>
+                        <span>الجرعة والبرنامج المرجعي</span>
+                    </h3>
+                    <div id="modalDosage" class="bg-teal-50/50 p-4 rounded-2xl border border-teal-100 text-slate-700 leading-relaxed text-sm"></div>
+                </div>
+
+                <!-- Side Effects & Contraindications -->
+                <div class="space-y-2">
+                    <h3 class="text-base font-bold text-slate-900 flex items-center gap-2 border-r-4 border-rose-500 pr-2.5">
+                        <i class="fa-solid fa-triangle-exclamation text-rose-500"></i>
+                        <span>الاحتياطات وموانع الاستعمال وحفظ السلسلة الباردة</span>
+                    </h3>
+                    <div id="modalSideEffects" class="bg-rose-50/50 p-4 rounded-2xl border border-rose-100 text-slate-700 leading-relaxed text-sm"></div>
+                </div>
+
+                <!-- Withdrawal Period -->
+                <div class="space-y-2">
+                    <h3 class="text-base font-bold text-slate-900 flex items-center gap-2 border-r-4 border-amber-500 pr-2.5">
+                        <i class="fa-solid fa-clock text-amber-600"></i>
+                        <span>فترة السحب (Withdrawal Period)</span>
+                    </h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div class="flex items-center gap-3 bg-amber-50/70 p-3.5 rounded-2xl border border-amber-200/60">
+                            <div class="w-10 h-10 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center text-lg">
+                                <i class="fa-solid fa-drumstick-bite"></i>
+                            </div>
+                            <div>
+                                <span class="text-xs text-amber-800 font-medium block">فترة سحب اللحم</span>
+                                <span id="modalWithdrawalMeat" class="font-bold text-amber-950 text-sm">غير محدد</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-3 bg-amber-50/70 p-3.5 rounded-2xl border border-amber-200/60">
+                            <div class="w-10 h-10 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center text-lg">
+                                <i class="fa-solid fa-cow"></i>
+                            </div>
+                            <div>
+                                <span class="text-xs text-amber-800 font-medium block">فترة سحب الحليب / البيض</span>
+                                <span id="modalWithdrawalMilk" class="font-bold text-amber-950 text-sm">غير محدد</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Modal Footer Toolbar -->
+            <div class="bg-slate-50 border-t border-slate-100 p-4 flex items-center justify-between gap-3 flex-shrink-0">
+                <button onclick="copyDrugDetails()" class="px-3.5 py-2 rounded-xl bg-white border border-slate-200 hover:bg-slate-100 text-slate-700 text-xs sm:text-sm font-semibold transition flex items-center gap-2 shadow-sm">
+                    <i class="fa-solid fa-copy text-slate-500"></i>
+                    <span>نسخ التفاصيل</span>
+                </button>
+                <div class="flex items-center gap-2">
+                    <button onclick="printDrugSheet()" class="px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-900 text-white text-xs sm:text-sm font-semibold transition flex items-center gap-2 shadow-md">
+                        <i class="fa-solid fa-print"></i>
+                        <span>طباعة</span>
+                    </button>
+                    <button onclick="closeDetailModal()" class="px-4 py-2 rounded-xl bg-sky-600 hover:bg-sky-700 text-white text-xs sm:text-sm font-semibold transition">
+                        إغلاق
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Modal 2: Add New Drug / Vaccine Modal -->
+    <div id="addModal" class="fixed inset-0 z-50 hidden overflow-y-auto bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4">
+        <div class="bg-white rounded-3xl max-w-2xl w-full max-h-[92vh] flex flex-col shadow-2xl border border-slate-100 overflow-hidden">
+            
+            <div class="bg-slate-900 text-white p-5 flex items-center justify-between flex-shrink-0">
+                <div class="flex items-center gap-2">
+                    <div class="w-8 h-8 rounded-lg bg-sky-500 flex items-center justify-center text-white">
+                        <i class="fa-solid fa-plus"></i>
+                    </div>
+                    <h2 class="text-lg font-bold">إضافة دواء أو مطعوم بيطري جديد</h2>
+                </div>
+                <button onclick="closeAddModal()" class="text-slate-400 hover:text-white transition">
+                    <i class="fa-solid fa-xmark text-xl"></i>
+                </button>
+            </div>
+
+            <form id="addDrugForm" onsubmit="saveNewDrug(event)" class="p-5 sm:p-6 overflow-y-auto space-y-4 text-sm flex-grow">
+                
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-1">اسم المطعوم أو الدواء <span class="text-rose-500">*</span></label>
+                        <input type="text" id="addTradeName" required placeholder="مثلاً: مطعوم نيوكاسل (لازوتا)" class="w-full p-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-sky-500 focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-1">المادة الفعالة / العترة اللقاحية <span class="text-rose-500">*</span></label>
+                        <input type="text" id="addSciName" required placeholder="مثلاً: LaSota Strain Live Virus" class="w-full p-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-sky-500 focus:outline-none">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-1">التصنيف الطبي</label>
+                        <select id="addCategory" class="w-full p-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-sky-500 focus:outline-none">
+                            <option value="مطاعيم">مطاعيم</option>
+                            <option value="مضادات حيوية">مضادات حيوية</option>
+                            <option value="مضادات طفيليات">مضادات طفيليات</option>
+                            <option value="مسكنات ومضادات التهاب">مسكنات ومضادات التهاب</option>
+                            <option value="فيتامينات ومقويات">فيتامينات ومقويات</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-1">التركيز / العيار</label>
+                        <input type="text" id="addConcentration" placeholder="مثلاً: 100 mg/mL أو 10^6 EID50" class="w-full p-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-sky-500 focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-1">الجهة المرجعية الرسمية</label>
+                        <select id="addSource" class="w-full p-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-sky-500 focus:outline-none">
+                            <option value="WOAH (المنظمة العالمية لصحة الحيوان)">WOAH</option>
+                            <option value="FDA (إدارة الغذاء والدواء الأمريكية)">FDA</option>
+                            <option value="EMA (وكالة الأدوية الأوروبية)">EMA</option>
+                            <option value="FAO (منظمة الأغذية والزراعة)">FAO</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-1">الحيوانات المستهدفة (دواجن، أبقار، أغنام)</label>
+                        <input type="text" id="addSpecies" placeholder="دواجن، أبقار، أغنام" class="w-full p-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-sky-500 focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-1">طريقة الإعطاء <span class="text-rose-500">*</span></label>
+                        <input type="text" id="addRoute" required placeholder="تقطير بالعين، ماء الشرب، رش، تحت الجلد، عضلي..." class="w-full p-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-sky-500 focus:outline-none">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">المرض المستهدف ودواعي الاستعمال <span class="text-rose-500">*</span></label>
+                    <textarea id="addBenefits" required rows="2" placeholder="اذكر المرض المستهدف أو دواعي الاستعمال..." class="w-full p-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-sky-500 focus:outline-none"></textarea>
+                </div>
+
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">الجرعة والبرنامج المرجعي <span class="text-rose-500">*</span></label>
+                    <textarea id="addDosage" required rows="2" placeholder="الجرعة الموصى بها وطريقة التحضير أو الحقن..." class="w-full p-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-sky-500 focus:outline-none"></textarea>
+                </div>
+
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">الاحتياطات وموانع الاستعمال</label>
+                    <textarea id="addSideEffects" rows="2" placeholder="سلسلة التبريد، موانع الاستخدام، التفاعلات..." class="w-full p-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-sky-500 focus:outline-none"></textarea>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-1">فترة سحب اللحم</label>
+                        <input type="text" id="addMeat" placeholder="مثلاً: 28 يوم أو غير مطبق للمطعوم" class="w-full p-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-sky-500 focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-1">فترة سحب الحليب / البيض</label>
+                        <input type="text" id="addMilk" placeholder="مثلاً: 36 ساعة أو صفر يوم" class="w-full p-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-sky-500 focus:outline-none">
+                    </div>
+                </div>
+
+                <div class="pt-4 flex items-center justify-end gap-3 border-t border-slate-100">
+                    <button type="button" onclick="closeAddModal()" class="px-4 py-2.5 rounded-xl border border-slate-200 text-slate-600 font-semibold hover:bg-slate-100 transition">
+                        إلغاء
+                    </button>
+                    <button type="submit" class="px-6 py-2.5 rounded-xl bg-sky-600 hover:bg-sky-700 text-white font-semibold transition shadow-md shadow-sky-500/20">
+                        حفظ
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal 4: Add New Disease Modal -->
+    <div id="addDiseaseModal" class="fixed inset-0 z-50 hidden overflow-y-auto bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4">
+        <div class="bg-white rounded-3xl max-w-2xl w-full max-h-[92vh] flex flex-col shadow-2xl border border-slate-100 overflow-hidden">
+            <div class="bg-rose-900 text-white p-5 flex items-center justify-between flex-shrink-0">
+                <div class="flex items-center gap-2">
+                    <div class="w-8 h-8 rounded-lg bg-rose-500 flex items-center justify-center text-white">
+                        <i class="fa-solid fa-virus"></i>
+                    </div>
+                    <h2 class="text-lg font-bold">إضافة مرض (دواجن / أبقار / أغنام)</h2>
+                </div>
+                <button onclick="closeAddDiseaseModal()" class="text-rose-200 hover:text-white transition">
+                    <i class="fa-solid fa-xmark text-xl"></i>
+                </button>
+            </div>
+
+            <form id="addDiseaseForm" onsubmit="saveNewDisease(event)" class="p-5 sm:p-6 overflow-y-auto space-y-4 text-sm flex-grow">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-1">اسم المرض <span class="text-rose-500">*</span></label>
+                        <input type="text" id="addDiseaseName" required placeholder="مثلاً: مرض نيوكاسل" class="w-full p-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-rose-500 focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-1">المسبب المرضي / الاسم العلمي</label>
+                        <input type="text" id="addDiseaseSciName" placeholder="مثلاً: Avian orthoavulavirus 1" class="w-full p-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-rose-500 focus:outline-none">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">الحيوانات المعرضة (دواجن، أبقار، أغنام)</label>
+                    <input type="text" id="addDiseaseSpecies" required placeholder="دواجن" class="w-full p-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-rose-500 focus:outline-none">
+                </div>
+
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">الأعراض السريرية <span class="text-rose-500">*</span></label>
+                    <textarea id="addDiseaseSymptoms" required rows="2" placeholder="أعراض تنفسية، عصبية، هضمية أو جلدية..." class="w-full p-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-rose-500 focus:outline-none"></textarea>
+                </div>
+
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">الوقاية بالمطاعيم وبروتوكول العلاج المرجعي <span class="text-rose-500">*</span></label>
+                    <textarea id="addDiseaseProtocol" required rows="2" placeholder="المطاعيم الوقائية وطرق إعطائها أو التدخل الدوائي المعتمد..." class="w-full p-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-rose-500 focus:outline-none"></textarea>
+                </div>
+
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">اختر المطاعيم أو الأدوية المرتبطة من الدليل</label>
+                    <select id="addDiseaseDrugsSelect" multiple class="w-full p-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-rose-500 focus:outline-none h-28"></select>
+                </div>
+
+                <div class="pt-4 flex items-center justify-end gap-3 border-t border-slate-100">
+                    <button type="button" onclick="closeAddDiseaseModal()" class="px-4 py-2.5 rounded-xl border border-slate-200 text-slate-600 font-semibold hover:bg-slate-100 transition">
+                        إلغاء
+                    </button>
+                    <button type="submit" class="px-6 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-semibold transition shadow-md shadow-rose-500/20">
+                        حفظ المرض
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal 3: Dosage Calculator -->
+    <div id="dosageModal" class="fixed inset-0 z-50 hidden overflow-y-auto bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4">
+        <div class="bg-white rounded-3xl max-w-lg w-full shadow-2xl border border-slate-100 overflow-hidden">
+            <div class="bg-teal-700 text-white p-5 flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                    <div class="w-8 h-8 rounded-lg bg-teal-500 flex items-center justify-center text-white">
+                        <i class="fa-solid fa-calculator"></i>
+                    </div>
+                    <h2 class="text-lg font-bold">حاسبة الجرعات البيطرية السريعة</h2>
+                </div>
+                <button onclick="closeDosageModal()" class="text-teal-200 hover:text-white transition">
+                    <i class="fa-solid fa-xmark text-xl"></i>
+                </button>
+            </div>
+
+            <div class="p-6 space-y-4 text-sm">
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">اختر الدواء (اختياري)</label>
+                    <select id="calcDrugSelect" onchange="autoFillCalc()" class="w-full p-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-teal-500 focus:outline-none">
+                        <option value="">-- إدخال يدوي --</option>
+                    </select>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-1">وزن الحيوان (كغم)</label>
+                        <input type="number" id="calcWeight" oninput="calculateDosage()" placeholder="مثلاً: 450" class="w-full p-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-teal-500 focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-1">الجرعة الموصى بها (ملغم/كغم)</label>
+                        <input type="number" id="calcDoseMg" oninput="calculateDosage()" placeholder="مثلاً: 20" class="w-full p-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-teal-500 focus:outline-none">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">تركيز المادة في المستحضر (ملغم / مل)</label>
+                    <input type="number" id="calcConc" oninput="calculateDosage()" placeholder="مثلاً: 300" class="w-full p-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-teal-500 focus:outline-none">
+                    <span class="text-xs text-slate-400 mt-1 block">* مثال: محلول بتركيز 30% يساوي 300 ملغم/مل.</span>
+                </div>
+
+                <!-- Result Display Box -->
+                <div class="bg-teal-50 p-4 rounded-2xl border border-teal-200 text-center space-y-1">
+                    <span class="text-xs text-teal-800 font-bold uppercase tracking-wider block">الجرعة الحجمية المطلوبة:</span>
+                    <span id="calcResult" class="text-3xl font-extrabold text-teal-900 block">0 مل</span>
+                    <span id="calcNote" class="text-xs text-teal-700 block">أدخل الوزن والجرعة والتركيز لحساب الحجم المطلوب</span>
+                </div>
+
+                <div class="pt-2 text-left">
+                    <button onclick="closeDosageModal()" class="w-full py-2.5 rounded-xl bg-slate-800 hover:bg-slate-900 text-white font-semibold transition">
+                        تم
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript Application Logic -->
+    <script>
+        // Official-Source Dataset Restricted to Poultry, Cattle, and Sheep
+        const defaultDrugs = [
+            // --- POULTRY VACCINES & DRUGS ---
+            {
+                id: 'v_nd',
+                tradeName: 'مطاعيم نيوكاسل الحية العترة الضعيفة (ND Lentogenic: B1 / LaSota)',
+                scientificName: 'Avian orthoavulavirus 1 (Lentogenic strains)',
+                category: 'مطاعيم',
+                concentration: 'حسب العيار المعتمد في النشرة (عادة 10^6 - 10^7 EID50/جرعة)',
+                source: 'WOAH (المنظمة العالمية لصحة الحيوان)',
+                form: 'مجفد بالتجميد يُحل قبل الاستعمال',
+                species: ['دواجن'],
+                route: 'تقطير في العين (Eyedrop)، أو في ماء الشرب، أو بالرش الخشن/الرذاذ (Spray) حسب العمر والعترة',
+                benefits: 'التحصين الوقائي ضد مرض نيوكاسل (Newcastle Disease) في الدواجن.',
+                dosage: 'جرعة واحدة لكل طائر (تقطير عيني 0.03-0.05 مل تقريباً أو عبر ماء شرب يُستهلك خلال 1-2 ساعة بعد إيقاف الكلور/المطهرات). يُحفظ مبرداً ويُستخدم خلال الفترة المحددة بعد الحل.',
+                sideEffects: 'قد تظهر تفاعلات تنفسية خفيفة مؤقتة خاصة عند الرش في الطيور ذات المناعة الأمومية المنخفضة؛ تُمنع المطهرات في مياه الشرب.',
+                withdrawalMeat: 'غير مطبق للمطاعيم المعتمدة وفق النشرة',
+                withdrawalMilk: 'غير مطبق (دواجن)',
+                isFavorite: true
+            },
+            {
+                id: 'v_ib',
+                tradeName: 'مطاعيم التهاب الشعب الهوائية المعدي (IB Live Vaccines: Mass / 793B)',
+                scientificName: 'Avian infectious bronchitis virus (Attenuated)',
+                category: 'مطاعيم',
+                concentration: 'حسب العيار المعتمد في النشرة الرسمية (EID50/جرعة)',
+                source: 'WOAH (المنظمة العالمية لصحة الحيوان)',
+                form: 'مجفد بالتجميد يُحل قبل الاستعمال',
+                species: ['دواجن'],
+                route: 'تقطير في العين (Eyedrop)، أو الرش الخشن (Coarse Spray)، أو ماء الشرب حسب النشرة',
+                benefits: 'التحصين ضد التهاب الشعب الهوائية المعدي (Infectious Bronchitis) في الدواجن.',
+                dosage: 'جرعة واحدة لكل طائر في الأعمار المحددة في برنامج التحصين المعتمد؛ يُخلط فبل الاستخدام ويُستهلك خلال المدة المسموحة.',
+                sideEffects: 'تفاعلات تنفسية خفيفة عابرة قد تتفاقم إذا ترافقت مع الميكوبلازما أو ضعف التهوية.',
+                withdrawalMeat: 'غير مطبق للمطاعيم المعتمدة وفق النشرة',
+                withdrawalMilk: 'غير مطبق (دواجن)',
+                isFavorite: false
+            },
+            {
+                id: 'v_ibd',
+                tradeName: 'مطاعيم مرض الجراب المعدي / جمبورو (IBD / Gumboro Vaccines)',
+                scientificName: 'Infectious bursal disease virus (Intermediate / Intermediate Plus)',
+                category: 'مطاعيم',
+                concentration: 'حسب العيار المعتمد في النشرة الرسمية (EID50/جرعة)',
+                source: 'WOAH (المنظمة العالمية لصحة الحيوان)',
+                form: 'مجفد بالتجميد أو معلق للحقن حسب المنتج',
+                species: ['دواجن'],
+                route: 'تقطير في العين، أو ماء الشرب، أو تحت الجلد / داخل العضلة للمطاعيم المثبطة في الأمهات',
+                benefits: 'الوقاية من مرض جمبورو (Gumboro Disease) وحماية جراب فابريشوس من التثبيط المناعي.',
+                dosage: 'يُحدد توقيت الجرعة وفق مستوى الأجسام المناعية الأمومية (MDA) ونشرة المنتج؛ تُعطى المطاعيم المثبطة للأمهات قبل بدء الإنتاج (حوالي 16-20 أسبوعاً).',
+                sideEffects: 'العتر الأكثر ضراوة قد تُحدث ضموراً في الجراب لدى الطيور ذات المناعة الأمومية المنخفضة جداً.',
+                withdrawalMeat: 'غير مطبق للمطاعيم المعتمدة وفق النشرة',
+                withdrawalMilk: 'غير مطبق (دواجن)',
+                isFavorite: false
+            },
+            {
+                id: 'd_amprolium',
+                tradeName: 'أمبروليوم (Amprolium — محلول / بودرة ماء الشرب)',
+                scientificName: 'Amprolium',
+                category: 'مضادات طفيليات',
+                concentration: 'تراكيز تجارية متعددة (مثل 9.6% أو 20% أو 25% — راجع النشرة)',
+                source: 'FDA / EMA',
+                form: 'محلول أو بودرة ذائبة في ماء الشرب',
+                species: ['دواجن', 'أبقار'],
+                route: 'فموياً عبر ماء الشرب (الدواجن والأبقار) أو التجريع الفموي/العلف حسب النشرة المعتمدة',
+                benefits: 'علاج والوقاية من الكوكسيديا المعوية (Coccidiosis) المسببة للإسهال الدموي وضعف التحويل الغذائي.',
+                dosage: 'تُحسب الجرعة بالملغم لكل كغم من وزن الجسم وتُذاب في كمية الماء المستهلكة خلال الفترة المحددة وفق النشرة الرسمية للمنتج.',
+                sideEffects: 'منافس للثيامين (فيتامين B1)؛ قد يؤدي الإفراط أو إطالة المدة دون مبرر إلى أعراض عصبية مرتبطة بنقص الثيامين.',
+                withdrawalMeat: '0 إلى 24 ساعة في الدواجن حسب النشرة المعتمدة (يختلف حسب النوع والتركيز)',
+                withdrawalMilk: 'حسب النشرة المعتمدة للأبقار',
+                isFavorite: false
+            },
+            {
+                id: 'd_enrofloxacin',
+                tradeName: 'إنروفلوكساسين (Enrofloxacin)',
+                scientificName: 'Enrofloxacin',
+                category: 'مضادات حيوية',
+                concentration: 'محاليل فموية (مثل 100 ملغم/مل) ومحاليل حقن حسب المنتج المعتمد',
+                source: 'EMA (وكالة الأدوية الأوروبية)',
+                form: 'محلول فموي لماء الشرب (دواجن) أو حقن (أبقار حسب الترخيص)',
+                species: ['دواجن', 'أبقار'],
+                route: 'فموياً عبر ماء الشرب في الدواجن؛ أو حقناً تحت الجلد/وريدياً في الأبقار حيثما هو مرخص',
+                benefits: 'علاج العدوى البكتيرية التنفسية والهضمية الحساسة للإنروفلوكساسين وفق ضوابط الاستخدام الرشيد للمضادات.',
+                dosage: 'المرجع الأوروبي (EMA): 10 ملغم/كغم من وزن الجسم يومياً لمدة 3-10 أيام في الدواجن؛ و2.5-5 ملغم/كغم يومياً لمدة 3-5 أيام في الأبقار.',
+                sideEffects: 'قد يؤثر على غضاريف المفاصل في الحيوانات الصغيرة سريعة النمو؛ يُحظر استخدامه خارج النشرة في الأنواع الغذائية.',
+                withdrawalMeat: 'حسب النشرة المعتمدة والنظام البيطري المحلي لكل منتج',
+                withdrawalMilk: 'حسب النشرة المعتمدة للأبقار',
+                isFavorite: false
+            },
+
+            // --- CATTLE VACCINES & DRUGS ---
+            {
+                id: 'v_fmd',
+                tradeName: 'مطاعيم الحمى القلاعية المثبطة (FMD Inactivated Vaccine)',
+                scientificName: 'Foot-and-mouth disease virus (Inactivated, multivalent/serotype-matched)',
+                category: 'مطاعيم',
+                concentration: 'حسب العيار والجرعة الحجمية المعتمدة في النشرة (عادة 1-2 مل/جرعة)',
+                source: 'WOAH / FAO',
+                form: 'مستحلب أو معلق مثبط للحقن',
+                species: ['أبقار', 'أغنام'],
+                route: 'حقن عضلي (IM) أو تحت الجلد (SC) في منطقة الرقبة وفق النشرة الرسمية',
+                benefits: 'التحصين الوقائي ضد الحمى القلاعية (Foot-and-Mouth Disease) بالعتر المطابقة للعتر الحقلية السائدة.',
+                dosage: 'جرعة واحدة حسب حجم الجرعة الموصى به في النشرة (يُعطى عادة من عمر 2-4 أشهر فأكثر، مع جرعات تنشيطية دورية كل 4-6 أشهر في المناطق الموبوءة).',
+                sideEffects: 'تورم موضعي خفيف مؤقت في موقع الحقن أو ارتفاع طفيف ومؤقت في الحرارة خلال 24-48 ساعة.',
+                withdrawalMeat: 'غير مطبق للمطاعيم المعتمدة وفق النشرة',
+                withdrawalMilk: 'غير مطبق للمطاعيم المعتمدة وفق النشرة',
+                isFavorite: true
+            },
+            {
+                id: 'v_lsd',
+                tradeName: 'مطاعيم مرض الجلد العقدي في الأبقار (LSD Vaccine: Capripox / Neethling)',
+                scientificName: 'Lumpy skin disease virus (Live attenuated / Homologous or Capripox)',
+                category: 'مطاعيم',
+                concentration: 'حسب العيار المعتمد في النشرة الرسمية (عادة 1 مل/جرعة بعد الحل)',
+                source: 'WOAH (المنظمة العالمية لصحة الحيوان)',
+                form: 'مجفد بالتجميد يُحل بالمحلول المرفق قبل الاستعمال',
+                species: ['أبقار'],
+                route: 'حقن تحت الجلد (SC) في منطقة الرقبة وفق النشرة الرسمية',
+                benefits: 'التحصين ضد مرض الجلد العقدي (Lumpy Skin Disease) في الأبقار.',
+                dosage: 'جرعة واحدة سنوياً في البرامج الوقائية (أو وفق توجيهات السلطات البيطرية في الحملات)، مع الالتزام باستخدام إبرة معقمة لكل حيوان.',
+                sideEffects: 'قد تظهر عقيدة موضعية صغيرة غير مؤلمة في مكان الحقن وتختفي خلال أسابيع.',
+                withdrawalMeat: 'غير مطبق للمطاعيم المعتمدة وفق النشرة',
+                withdrawalMilk: 'غير مطبق للمطاعيم المعتمدة وفق النشرة',
+                isFavorite: false
+            },
+            {
+                id: 'd_tulathromycin',
+                tradeName: 'تولاثروميسين للحقن (Tulathromycin Injection)',
+                scientificName: 'Tulathromycin',
+                category: 'مضادات حيوية',
+                concentration: '100 ملغم/مل (100 mg/mL)',
+                source: 'FDA / EMA',
+                form: 'محلول للحقن',
+                species: ['أبقار', 'أغنام'],
+                route: 'حقن تحت الجلد (SC) في الرقبة في الأبقار (وبحسب الترخيص المحلي في الأغنام)',
+                benefits: 'علاج والوقاية من أمراض الجهاز التنفسي البقرية (BRD) المرتبطة بـ Mannheimia haemolytica و Pasteurella multocida و Histophilus somni و Mycoplasma bovis.',
+                dosage: 'الجرعة المرجعية في الأبقار: 2.5 ملغم/كغم من وزن الجسم (2.5 مل لكل 100 كغم) كجرعة واحدة تحت الجلد؛ لا يُحقن أكثر من 10 مل في الموضع الواحد.',
+                sideEffects: 'ألم أو تورم موضعي مؤقت مكان الحقن؛ يُمنع في أبقار الحليب الحلوب أو قبل الولادة حسب شروط النشرة الرسمية.',
+                withdrawalMeat: 'وفق النشرة المعتمدة (تختلف حسب المنتج والبلد؛ راجع بطاقة المنتج)',
+                withdrawalMilk: 'غير مسموح في الأبقار الحلوب أو ذات الحليب المعد للاستهلاك البشري',
+                isFavorite: true
+            },
+            {
+                id: 'd_florfenicol',
+                tradeName: 'فلورفينيكول للحقن (Florfenicol Injection)',
+                scientificName: 'Florfenicol',
+                category: 'مضادات حيوية',
+                concentration: '300 ملغم/مل (300 mg/mL)',
+                source: 'FDA / EMA',
+                form: 'محلول للحقن',
+                species: ['أبقار', 'أغنام'],
+                route: 'حقن عضلي (IM) أو تحت الجلد (SC) في الرقبة حسب الجرعة والمنتج',
+                benefits: 'علاج أمراض الجهاز التنفسي البقرية (BRD) والتهاب النسيج بين الظلفين (تعفن القدم / Foot Rot) في الأبقار.',
+                dosage: 'في الأبقار: 20 ملغم/كغم عضلياً وتُكرر بعد 48 ساعة، أو 40 ملغم/كغم تحت الجلد كجرعة واحدة (بحد أقصى 10 مل في الموضع الواحد حسب النشرة).',
+                sideEffects: 'قد يسبب تورماً موضعياً في مكان الحقن وتراجعاً مؤقتاً في الشهية؛ لا يُستخدم في الأبقار الحلوب أو قبل الولادة حسب النشرة.',
+                withdrawalMeat: '28 يوماً (عضلي) أو 38 يوماً (تحت الجلد) وفق ملخصات FDA للمنتجات القياسية',
+                withdrawalMilk: 'غير مسموح في الأبقار الحلوب',
+                isFavorite: false
+            },
+            {
+                id: 'd_flunixin',
+                tradeName: 'فلونيكسين ميجلومين (Flunixin Meglumine Injection)',
+                scientificName: 'Flunixin meglumine',
+                category: 'مسكنات ومضادات التهاب',
+                concentration: '50 ملغم/مل (50 mg/mL — مكافئاً لـ 50 ملغم فلونيكسين/مل)',
+                source: 'FDA (إدارة الغذاء والدواء الأمريكية)',
+                form: 'محلول للحقن',
+                species: ['أبقار', 'أغنام'],
+                route: 'حقن وريدي (IV) بطيء في الأبقار (ووفق النشرة المعتمدة للنوع)',
+                benefits: 'السيطرة على الحمى والالتهاب المرتبط بأمراض الجهاز التنفسي البقرية والتسمم الداخلي (Endotoxemia) في الأبقار.',
+                dosage: 'الجرعة المرجعية في الأبقار: 1.1 إلى 2.2 ملغم/كغم من وزن الجسم (حوالي 1 إلى 2.2 مل لكل 50 كغم) مرة واحدة يومياً أو مقسمة كل 12 ساعة حسب النشرة.',
+                sideEffects: 'خطر تقرح الجهاز الهضمي أو الكلى؛ يُحظر الحقن العضلي في بعض المستحضرات وفق النشرة ويُمنع تجاوز الجرعة أو المسار.',
+                withdrawalMeat: '4 أيام في الأبقار وفق النشرة المرجعية (21 CFR 522.970)',
+                withdrawalMilk: '36 ساعة في الأبقار وفق النشرة المرجعية',
+                isFavorite: false
+            },
+
+            // --- SHEEP VACCINES & DRUGS ---
+            {
+                id: 'v_ppr',
+                tradeName: 'مطاعيم طاعون المجترات الصغيرة (PPR Live Attenuated Vaccine)',
+                scientificName: 'Peste des petits ruminants virus (Nigeria 75/1 أو Sungri 96)',
+                category: 'مطاعيم',
+                concentration: 'حسب العيار المعتمد في النشرة (عادة 10^2.5 - 10^3 TCID50/جرعة)',
+                source: 'WOAH / FAO',
+                form: 'مجفد بالتجميد يُحل بالمحلول المرفق قبل الاستعمال',
+                species: ['أغنام'],
+                route: 'حقن تحت الجلد (SC) في منطقة الرقبة أو خلف الكتف وفق النشرة الرسمية',
+                benefits: 'التحصين الوقائي ضد طاعون المجترات الصغيرة (Peste des Petits Ruminants) في الأغنام.',
+                dosage: 'جرعة واحدة (عادة 1 مل بعد التحضير) للحيوانات السليمة من عمر 3 أشهر فأكثر؛ تُحفظ مبردة (2-8°م) وتُستخدم خلال 2-3 ساعات من الحل وفق WOAH/FAO.',
+                sideEffects: 'حساس جداً للحرارة والضوء بعد التحضير؛ لا يُستخدم في الحيوانات المريضة أو المجهدة بشدة.',
+                withdrawalMeat: 'غير مطبق للمطاعيم المعتمدة وفق النشرة',
+                withdrawalMilk: 'غير مطبق للمطاعيم المعتمدة وفق النشرة',
+                isFavorite: true
+            },
+            {
+                id: 'v_sheep_pox',
+                tradeName: 'مطاعيم جدري الأغنام (Sheep Pox Live / Inactivated Vaccine)',
+                scientificName: 'Sheeppox virus (Capripoxvirus)',
+                category: 'مطاعيم',
+                concentration: 'حسب العيار المعتمد في النشرة الرسمية',
+                source: 'WOAH (المنظمة العالمية لصحة الحيوان)',
+                form: 'مجفد بالتجميد يُحل قبل الاستعمال (أو مثبط حسب المنتج)',
+                species: ['أغنام'],
+                route: 'حقن تحت الجلد (SC) أو داخل الأدمة (ID) حسب نوع المطعوم ونشرة المنتج',
+                benefits: 'الوقاية من مرض جدري الأغنام (Sheep Pox).',
+                dosage: 'جرعة واحدة وفق تعليمات النشرة وسلطات الصحة الحيوانية، مع التحقق من ملاءمة العترة للسلالة المستهدفة.',
+                sideEffects: 'قد يظهر تفاعل موضعي محدود في موقع الحقن؛ يجب الالتزام بسلسلة التبريد والنشرات المعتمدة.',
+                withdrawalMeat: 'غير مطبق للمطاعيم المعتمدة وفق النشرة',
+                withdrawalMilk: 'غير مطبق للمطاعيم المعتمدة وفق النشرة',
+                isFavorite: false
+            },
+            {
+                id: 'd_decoquinate',
+                tradeName: 'ديكوكينات (Decoquinate)',
+                scientificName: 'Decoquinate',
+                category: 'مضادات طفيليات',
+                concentration: 'إضافات علفية / خلطات مركزية حسب التركيز المعتمد في النشرة',
+                source: 'FDA (إدارة الغذاء والدواء الأمريكية)',
+                form: 'خلطة علفية / تحضير فموي حسب الترخيص',
+                species: ['أغنام', 'أبقار'],
+                route: 'فموياً عبر العلف أو الجرعة المحددة في النشرة المعتمدة',
+                benefits: 'الوقاية من الكوكسيديا (Coccidiosis) في الحملان والعجول المعرضة للإصابة.',
+                dosage: 'الجرعة المرجعية في الحملان وفق ملفات FDA: 0.5 ملغم/كغم من وزن الجسم يومياً لمدة لا تقل عن 28 يوماً.',
+                sideEffects: 'يُمنع استخدامه في إناث الأغنام أو الأبقار المنتجة للحليب المعد للاستهلاك البشري.',
+                withdrawalMeat: '0 يوم (صفر يوم) في الحملان عند الجرعة المرجعية 0.5 ملغم/كغم/يوم وفق النشرة المعتمدة',
+                withdrawalMilk: 'غير مخصص للحلوب',
+                isFavorite: false
+            },
+            {
+                id: 'd_fenbendazole',
+                tradeName: 'فينبندازول (Fenbendazole)',
+                scientificName: 'Fenbendazole',
+                category: 'مضادات طفيليات',
+                concentration: 'تراكيز متعددة (مثل 100 ملغم/مل معلق فموي أو بودرة/أقراص — راجع النشرة)',
+                source: 'EMA / FDA',
+                form: 'معلق فموي (Oral suspension) أو أقراص/حبيبات',
+                species: ['أغنام', 'أبقار'],
+                route: 'فموياً بالتجريع (Oral drench) أو عبر العلف حسب النشرة المعتمدة',
+                benefits: 'مكافحة الديدان الأسطوانية المعوية والرئوية والديدان الشريطية في الأغنام والأبقار.',
+                dosage: 'تُحسب الجرعة بالملغم لكل كغم من وزن الجسم وتُقرب بدقة حسب ميزان الحيوان ونشرة التركيز المستخدم.',
+                sideEffects: 'تُراعى تعليمات النشرة بشأن الجرعات والفترات؛ يُتجنب التلوث البيئي بمخلفات المعالجة.',
+                withdrawalMeat: 'وفق النشرة المعتمدة للتركيز والنوع (يتراوح غالباً لعدة أيام إلى أسبوعين حسب المنتج)',
+                withdrawalMilk: 'وفق النشرة المعتمدة للمنتج والتركيز',
+                isFavorite: false
+            }
+        ];
+
+        // Official-Source Diseases Dataset Restricted to Poultry, Cattle, and Sheep
+        const defaultDiseases = [
+            {
+                id: 'dis_nd',
+                name: 'مرض نيوكاسل في الدواجن (Newcastle Disease)',
+                sciName: 'Avian orthoavulavirus 1 • المرجع: WOAH',
+                species: ['دواجن'],
+                symptoms: 'خمول حاد، أعراض تنفسية (صفير، سعال، التهاب ملتحمة)، إسهال أخضر مائي، وأعراض عصبية (التواء الرقبة، ارتعاش، شلل) مع نفوق مرتفع في العتر الضارية.',
+                protocol: 'لا يوجد علاج دوائي نوعي للفيروس؛ يعتمد التحكم على الأمن الحيوي الصارم والتحصين بمطاعيم نيوكاسل المعتمدة (تقطير عيني، ماء شرب، أو رش حسب العمر والعترة).',
+                recommendedDrugIds: ['v_nd']
+            },
+            {
+                id: 'dis_ib',
+                name: 'التهاب الشعب الهوائية المعدي في الدواجن (Infectious Bronchitis)',
+                sciName: 'Avian infectious bronchitis virus • المرجع: WOAH',
+                species: ['دواجن'],
+                symptoms: 'أعراض تنفسية سريعة الانتشار (عطاس، حشرجة، إفرازات أنفية)، انخفاض استهلاك العلف، تراجع إنتاج البيض وتدهور جودته، وإصابات كلوية في بعض العتر.',
+                protocol: 'تحسين التهوية والأمن الحيوي والتحصين بمطاعيم IB المعتمدة (عيني، رش، أو ماء شرب)، مع علاج العدوى البكتيرية الثانوية عند الحاجة بإشراف بيطري.',
+                recommendedDrugIds: ['v_ib', 'd_enrofloxacin']
+            },
+            {
+                id: 'dis_ibd',
+                name: 'مرض الجراب المعدي / جمبورو (Infectious Bursal Disease - Gumboro)',
+                sciName: 'Infectious bursal disease virus • المرجع: WOAH',
+                species: ['دواجن'],
+                symptoms: 'خمول شديد، نفش الريش، إسهال أبيض/مائي، انخفاض استهلاك الماء، وتضخم أو نزف في جراب فابريشوس في الطيور الصغيرة.',
+                protocol: 'الوقاية عبر تحصين الأمهات وتحديد توقيت تحصين الصيصان بمطاعيم IBD وفق المناعة الأمومية وطريقة الإعطاء المعتمدة في النشرة.',
+                recommendedDrugIds: ['v_ibd']
+            },
+            {
+                id: 'dis_coccidiosis',
+                name: 'الكوكسيديا المعوية (Coccidiosis)',
+                sciName: 'Eimeria spp. • المرجع: FDA / EMA',
+                species: ['دواجن', 'أبقار', 'أغنام'],
+                symptoms: 'إسهال مائي أو مختلط بالدم، ضعف النمو، شحوب، جفاف، وارتفاع النفوق في الحالات الشديدة خاصة في الفرشة الرطبة أو الازدحام.',
+                protocol: 'إدارة الفرشة والنظافة واستخدام مضادات الكوكسيديا المعتمدة مثل الأمبروليوم أو الديكوكينات بالجرعات والفترات المحددة في النشرة.',
+                recommendedDrugIds: ['d_amprolium', 'd_decoquinate']
+            },
+            {
+                id: 'dis_fmd',
+                name: 'الحمى القلاعية (Foot-and-Mouth Disease - FMD)',
+                sciName: 'Aphthovirus • المرجع: WOAH / FAO',
+                species: ['أبقار', 'أغنام'],
+                symptoms: 'ارتفاع الحرارة، حويصلات وتقرحات في الفم واللثة واللثة السفلى وحول الحوافر، سيلان لعاب غزير، عرج، وانخفاض حاد في الحليب.',
+                protocol: 'إبلاغ السلطات البيطرية وتطبيق الحجر والأمن الحيوي والتحصين بمطاعيم الحمى القلاعية المثبطة بالعتر المطابقة (حقن عضلي أو تحت الجلد حسب النشرة).',
+                recommendedDrugIds: ['v_fmd']
+            },
+            {
+                id: 'dis_lsd',
+                name: 'مرض الجلد العقدي في الأبقار (Lumpy Skin Disease - LSD)',
+                sciName: 'Capripoxvirus • المرجع: WOAH',
+                species: ['أبقار'],
+                symptoms: 'حمى، ظهور عقيدات جلدية صلبة منتشرة على الجسم والرقبة والضرع، تضخم العقد اللمفاوية، وذمة في الأطراف وتراجع الحليب.',
+                protocol: 'مكافحة الحشرات الناقلة، عزل الحالات، والتحصين الوقائي بمطاعيم الجلد العقدي المعتمدة (تحت الجلد وفق النشرة الرسمية).',
+                recommendedDrugIds: ['v_lsd']
+            },
+            {
+                id: 'dis_brd',
+                name: 'أمراض الجهاز التنفسي البقرية (Bovine Respiratory Disease - BRD)',
+                sciName: 'Mannheimia haemolytica / Pasteurella / Histophilus • المرجع: FDA / EMA',
+                species: ['أبقار'],
+                symptoms: 'حمى، سرعة وصعوبة التنفس، سعال، إفرازات أنفية، خمول، وفقدان الشهية.',
+                protocol: 'علاج بكتيري مستهدف بمضادات معتمدة مثل التولاثروميسين أو الفلورفينيكول مع خافض حرارة/مضاد التهاب مثل الفلونيكسين ميجلومين وفق النشرة.',
+                recommendedDrugIds: ['d_tulathromycin', 'd_florfenicol', 'd_flunixin']
+            },
+            {
+                id: 'dis_ppr',
+                name: 'طاعون المجترات الصغيرة (Peste des Petits Ruminants - PPR)',
+                sciName: 'Morbillivirus • المرجع: WOAH / FAO',
+                species: ['أغنام'],
+                symptoms: 'ارتفاع مفاجئ في الحرارة، إفرازات عينية وأنفية تتحول إلى صديدية، تقرحات فموية، إسهال شديد، والتهاب رئوي ونفوق مرتفع.',
+                protocol: 'الوقاية الأساسية بالتحصين بمطعوم PPR الحي المضعف (تحت الجلد مع الالتزام الصارم بسلسلة التبريد والاستخدام خلال 2-3 ساعات بعد الحل).',
+                recommendedDrugIds: ['v_ppr']
+            },
+            {
+                id: 'dis_sheep_pox',
+                name: 'جدري الأغنام (Sheep Pox)',
+                sciName: 'Capripoxvirus • المرجع: WOAH',
+                species: ['أغنام'],
+                symptoms: 'حمى، آفات جلدية تترقى من بقع وحطاطات إلى بثور وقشور على المناطق قليلة الصوف وتحت الذيل والوجه، مع نفوق أعلى في الحملان.',
+                protocol: 'عزل الحيوانات المصابة وتطبيق الأمن الحيوي والتحصين بمطاعيم جدري الأغنام المعتمدة حسب التعليمات الرسمية.',
+                recommendedDrugIds: ['v_sheep_pox']
+            }
+        ];
+
+        // State Variables
+        let drugsList = [];
+        let diseasesList = [];
+        let currentMainTab = 'drugs';
+        let selectedCategory = 'الكل';
+        let selectedSpecies = 'الكل';
+        let selectedDiseaseSpecies = 'الكل';
+        let favoriteOnly = false;
+        let activeDrugForModal = null;
+
+        const categoriesList = [
+            'الكل',
+            'مطاعيم',
+            'مضادات حيوية',
+            'مضادات طفيليات',
+            'مسكنات ومضادات التهاب',
+            'فيتامينات ومقويات'
+        ];
+
+        // Strictly limited to Poultry, Cattle, and Sheep
+        const speciesList = [
+            'الكل',
+            'دواجن',
+            'أبقار',
+            'أغنام'
+        ];
+
+        // Application Initialization
+        window.addEventListener('DOMContentLoaded', () => {
+            loadDrugs();
+            loadDiseases();
+            renderCategoryPills();
+            renderSpeciesPills();
+            renderDiseaseSpeciesPills();
+            renderDrugs();
+            renderDiseases();
+            populateDosageSelect();
+        });
+
+        function loadDrugs() {
+            const saved = localStorage.getItem('vet_pharm_official_drugs_v1');
+            if (saved) {
+                try {
+                    drugsList = JSON.parse(saved);
+                } catch(e) {
+                    drugsList = [...defaultDrugs];
+                }
+            } else {
+                drugsList = [...defaultDrugs];
+                saveToLocalStorage();
+            }
+        }
+
+        function saveToLocalStorage() {
+            localStorage.setItem('vet_pharm_official_drugs_v1', JSON.stringify(drugsList));
+        }
+
+        function loadDiseases() {
+            const saved = localStorage.getItem('vet_pharm_official_diseases_v1');
+            if (saved) {
+                try {
+                    diseasesList = JSON.parse(saved);
+                } catch(e) {
+                    diseasesList = [...defaultDiseases];
+                }
+            } else {
+                diseasesList = [...defaultDiseases];
+                saveDiseasesToLocalStorage();
+            }
+        }
+
+        function saveDiseasesToLocalStorage() {
+            localStorage.setItem('vet_pharm_official_diseases_v1', JSON.stringify(diseasesList));
+        }
+
+        function switchMainTab(tab) {
+            currentMainTab = tab;
+            const drugsView = document.getElementById('drugsView');
+            const diseasesView = document.getElementById('diseasesView');
+            const tabDrugsBtn = document.getElementById('tabDrugsBtn');
+            const tabDiseasesBtn = document.getElementById('tabDiseasesBtn');
+            const mainAddBtnText = document.getElementById('mainAddBtnText');
+
+            if (tab === 'drugs') {
+                drugsView.classList.remove('hidden');
+                diseasesView.classList.add('hidden');
+                tabDrugsBtn.className = 'flex-1 py-2.5 px-4 rounded-xl text-sm font-bold transition-all flex items-center justify-center gap-2 bg-sky-600 text-white shadow-md shadow-sky-500/20';
+                tabDiseasesBtn.className = 'flex-1 py-2.5 px-4 rounded-xl text-sm font-bold transition-all flex items-center justify-center gap-2 text-slate-600 hover:bg-slate-50';
+                mainAddBtnText.innerText = 'إضافة مادة / مطعوم';
+            } else {
+                drugsView.classList.add('hidden');
+                diseasesView.classList.remove('hidden');
+                tabDiseasesBtn.className = 'flex-1 py-2.5 px-4 rounded-xl text-sm font-bold transition-all flex items-center justify-center gap-2 bg-rose-600 text-white shadow-md shadow-rose-500/20';
+                tabDrugsBtn.className = 'flex-1 py-2.5 px-4 rounded-xl text-sm font-bold transition-all flex items-center justify-center gap-2 text-slate-600 hover:bg-slate-50';
+                mainAddBtnText.innerText = 'إضافة مرض';
+            }
+        }
+
+        function handleMainAddClick() {
+            if (currentMainTab === 'drugs') {
+                openAddModal();
+            } else {
+                openAddDiseaseModal();
+            }
+        }
+
+        function renderCategoryPills() {
+            const container = document.getElementById('categoryPills');
+            container.innerHTML = categoriesList.map(cat => {
+                const isActive = selectedCategory === cat;
+                const activeClass = isActive 
+                    ? 'bg-sky-600 text-white shadow-md shadow-sky-500/20 font-bold' 
+                    : 'bg-slate-100 text-slate-600 hover:bg-slate-200 font-medium';
+                return `<button onclick="selectCategory('${cat}')" class="px-3 py-1.5 rounded-xl transition ${activeClass}">${cat}</button>`;
+            }).join('');
+        }
+
+        function renderSpeciesPills() {
+            const container = document.getElementById('speciesPills');
+            container.innerHTML = speciesList.map(sp => {
+                const isActive = selectedSpecies === sp;
+                const activeClass = isActive 
+                    ? 'bg-teal-600 text-white shadow-md shadow-teal-500/20 font-bold' 
+                    : 'bg-slate-100 text-slate-600 hover:bg-slate-200 font-medium';
+                return `<button onclick="selectSpecies('${sp}')" class="px-3 py-1.5 rounded-xl transition ${activeClass}">${sp}</button>`;
+            }).join('');
+        }
+
+        function selectCategory(cat) {
+            selectedCategory = cat;
+            renderCategoryPills();
+            renderDrugs();
+        }
+
+        function selectSpecies(sp) {
+            selectedSpecies = sp;
+            renderSpeciesPills();
+            renderDrugs();
+        }
+
+        function renderDiseaseSpeciesPills() {
+            const container = document.getElementById('diseaseSpeciesPills');
+            container.innerHTML = speciesList.map(sp => {
+                const isActive = selectedDiseaseSpecies === sp;
+                const activeClass = isActive 
+                    ? 'bg-rose-600 text-white shadow-md shadow-rose-500/20 font-bold' 
+                    : 'bg-slate-100 text-slate-600 hover:bg-slate-200 font-medium';
+                return `<button onclick="selectDiseaseSpecies('${sp}')" class="px-3 py-1.5 rounded-xl transition ${activeClass}">${sp}</button>`;
+            }).join('');
+        }
+
+        function selectDiseaseSpecies(sp) {
+            selectedDiseaseSpecies = sp;
+            renderDiseaseSpeciesPills();
+            renderDiseases();
+        }
+
+        function renderDiseases() {
+            const query = document.getElementById('diseaseSearchInput').value.trim().toLowerCase();
+            const grid = document.getElementById('diseasesGrid');
+            const emptyState = document.getElementById('diseaseEmptyState');
+
+            const filtered = diseasesList.filter(dis => {
+                const matchesQuery = dis.name.toLowerCase().includes(query) ||
+                                     (dis.sciName && dis.sciName.toLowerCase().includes(query)) ||
+                                     dis.symptoms.toLowerCase().includes(query) ||
+                                     dis.protocol.toLowerCase().includes(query);
+                const matchesSp = (selectedDiseaseSpecies === 'الكل') || (dis.species && dis.species.includes(selectedDiseaseSpecies));
+                return matchesQuery && matchesSp;
+            });
+
+            if (filtered.length === 0) {
+                grid.innerHTML = '';
+                emptyState.classList.remove('hidden');
+                return;
+            }
+
+            emptyState.classList.add('hidden');
+
+            grid.innerHTML = filtered.map(dis => {
+                const matchedDrugs = (dis.recommendedDrugIds || [])
+                    .map(id => drugsList.find(d => d.id === id))
+                    .filter(Boolean);
+
+                return `
+                <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm hover:shadow-lg transition-all p-5 flex flex-col justify-between space-y-4">
+                    <div class="space-y-3">
+                        <div class="flex items-start justify-between gap-3">
+                            <div class="flex items-center gap-3">
+                                <div class="w-11 h-11 rounded-2xl bg-rose-50 text-rose-600 border border-rose-100 flex items-center justify-center text-lg flex-shrink-0">
+                                    <i class="fa-solid fa-virus"></i>
+                                </div>
+                                <div>
+                                    <h3 class="text-lg font-extrabold text-slate-800 leading-snug">${dis.name}</h3>
+                                    ${dis.sciName ? `<p class="text-xs font-mono text-slate-500">${dis.sciName}</p>` : ''}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="flex flex-wrap gap-1.5">
+                            ${(dis.species || []).map(sp => `<span class="text-[11px] bg-slate-100 text-slate-700 px-2.5 py-0.5 rounded-md font-bold">${sp}</span>`).join('')}
+                        </div>
+
+                        <div class="bg-rose-50/50 p-3 rounded-xl border border-rose-100/80 space-y-1">
+                            <span class="text-xs font-bold text-rose-800 flex items-center gap-1.5">
+                                <i class="fa-solid fa-notes-medical"></i>
+                                <span>الأعراض السريرية:</span>
+                            </span>
+                            <p class="text-xs text-slate-700 leading-relaxed">${dis.symptoms}</p>
+                        </div>
+
+                        <div class="bg-teal-50/50 p-3 rounded-xl border border-teal-100/80 space-y-1">
+                            <span class="text-xs font-bold text-teal-800 flex items-center gap-1.5">
+                                <i class="fa-solid fa-user-doctor"></i>
+                                <span>الوقاية بالمطاعيم وبروتوكول العلاج المرجعي:</span>
+                            </span>
+                            <p class="text-xs text-slate-700 leading-relaxed">${dis.protocol}</p>
+                        </div>
+                    </div>
+
+                    <div class="pt-3 border-t border-slate-100 space-y-2">
+                        <span class="text-xs font-bold text-slate-700 flex items-center gap-1.5">
+                            <i class="fa-solid fa-syringe text-sky-600"></i>
+                            <span>المطاعيم والأدوية المرتبطة (اضغط لعرض التركيز وطريقة الإعطاء):</span>
+                        </span>
+                        <div class="flex flex-wrap gap-2">
+                            ${matchedDrugs.length > 0 
+                                ? matchedDrugs.map(drug => `
+                                    <button onclick="openDetailModal('${drug.id}')" class="px-3 py-1.5 rounded-xl bg-sky-50 hover:bg-sky-600 text-sky-700 hover:text-white border border-sky-200 hover:border-sky-600 text-xs font-bold transition flex items-center gap-1.5 shadow-sm">
+                                        <i class="fa-solid fa-syringe text-[11px]"></i>
+                                        <span>${drug.tradeName}</span>
+                                    </button>
+                                `).join('')
+                                : `<span class="text-xs text-slate-400">راجع البروتوكول أعلاه</span>`
+                            }
+                        </div>
+                    </div>
+                </div>
+                `;
+            }).join('');
+        }
+
+        function toggleFavoriteFilter() {
+            favoriteOnly = !favoriteOnly;
+            const btn = document.getElementById('favoriteFilterToggle');
+            if (favoriteOnly) {
+                btn.classList.add('bg-amber-50', 'border-amber-400', 'text-amber-700', 'font-bold');
+            } else {
+                btn.classList.remove('bg-amber-50', 'border-amber-400', 'text-amber-700', 'font-bold');
+            }
+            renderDrugs();
+        }
+
+        function clearSearch() {
+            document.getElementById('searchInput').value = '';
+            renderDrugs();
+        }
+
+        function resetFilters() {
+            document.getElementById('searchInput').value = '';
+            selectedCategory = 'الكل';
+            selectedSpecies = 'الكل';
+            favoriteOnly = false;
+            document.getElementById('favoriteFilterToggle').classList.remove('bg-amber-50', 'border-amber-400', 'text-amber-700', 'font-bold');
+            renderCategoryPills();
+            renderSpeciesPills();
+            renderDrugs();
+        }
+
+        function renderDrugs() {
+            const query = document.getElementById('searchInput').value.trim().toLowerCase();
+            const sortVal = document.getElementById('sortSelect').value;
+            const clearBtn = document.getElementById('clearSearchBtn');
+
+            if (query) {
+                clearBtn.classList.remove('hidden');
+            } else {
+                clearBtn.classList.add('hidden');
+            }
+
+            let filtered = drugsList.filter(drug => {
+                const matchesQuery = drug.tradeName.toLowerCase().includes(query) || 
+                                     drug.scientificName.toLowerCase().includes(query) ||
+                                     drug.category.toLowerCase().includes(query) ||
+                                     (drug.concentration && drug.concentration.toLowerCase().includes(query)) ||
+                                     (drug.route && drug.route.toLowerCase().includes(query)) ||
+                                     (drug.source && drug.source.toLowerCase().includes(query));
+                
+                const matchesCat = (selectedCategory === 'الكل') || (drug.category === selectedCategory);
+                const matchesSp = (selectedSpecies === 'الكل') || (drug.species && drug.species.includes(selectedSpecies));
+                const matchesFav = !favoriteOnly || drug.isFavorite;
+
+                return matchesQuery && matchesCat && matchesSp && matchesFav;
+            });
+
+            if (sortVal === 'nameAsc') {
+                filtered.sort((a, b) => a.tradeName.localeCompare(b.tradeName, 'ar'));
+            } else if (sortVal === 'nameDesc') {
+                filtered.sort((a, b) => b.tradeName.localeCompare(a.tradeName, 'ar'));
+            } else if (sortVal === 'source') {
+                filtered.sort((a, b) => (a.source || '').localeCompare(b.source || '', 'ar'));
+            }
+
+            updateStats(filtered.length);
+
+            const grid = document.getElementById('drugsGrid');
+            const emptyState = document.getElementById('emptyState');
+
+            if (filtered.length === 0) {
+                grid.innerHTML = '';
+                emptyState.classList.remove('hidden');
+                return;
+            }
+
+            emptyState.classList.add('hidden');
+
+            grid.innerHTML = filtered.map(drug => {
+                const starColor = drug.isFavorite ? 'text-amber-400' : 'text-slate-300 hover:text-amber-400';
+                
+                let iconClass = 'fa-syringe';
+                if (drug.category === 'مضادات حيوية') iconClass = 'fa-capsules';
+                else if (drug.category === 'مضادات طفيليات') iconClass = 'fa-bug-slash';
+                else if (drug.category === 'مسكنات ومضادات التهاب') iconClass = 'fa-fire-flame-curved';
+                else if (drug.category === 'فيتامينات ومقويات') iconClass = 'fa-vial-circle-check';
+
+                return `
+                <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 flex flex-col justify-between overflow-hidden group">
+                    <div class="p-5 space-y-3">
+                        
+                        <div class="flex items-start justify-between gap-3">
+                            <div class="flex items-center gap-3">
+                                <div class="w-12 h-12 rounded-2xl bg-sky-50 text-sky-600 border border-sky-100 flex items-center justify-center text-xl font-bold group-hover:bg-sky-600 group-hover:text-white transition-colors flex-shrink-0">
+                                    <i class="fa-solid ${iconClass}"></i>
+                                </div>
+                                <div>
+                                    <span class="text-[11px] font-bold text-sky-700 bg-sky-50 px-2.5 py-0.5 rounded-full border border-sky-100">${drug.category}</span>
+                                    <h3 class="text-base font-extrabold text-slate-800 leading-snug mt-0.5">${drug.tradeName}</h3>
+                                </div>
+                            </div>
+                            <button onclick="toggleFavorite('${drug.id}')" title="أضف للمفضلة" class="p-1.5 transition flex-shrink-0">
+                                <i class="fa-solid fa-star text-lg ${starColor}"></i>
+                            </button>
+                        </div>
+
+                        <div class="space-y-1.5 pt-1">
+                            <p class="text-xs font-mono font-medium text-slate-500 flex items-center gap-1.5">
+                                <i class="fa-solid fa-dna text-teal-500 text-[10px]"></i>
+                                <span>${drug.scientificName}</span>
+                            </p>
+                            <div class="flex flex-wrap items-center gap-1.5 text-xs">
+                                <span class="bg-emerald-50 text-emerald-800 border border-emerald-200/70 px-2 py-0.5 rounded-md font-bold text-[11px]">${drug.source || 'مرجع رسمي'}</span>
+                            </div>
+                            <div class="bg-slate-50 px-2.5 py-1.5 rounded-lg border border-slate-100 text-xs text-slate-700">
+                                <span class="font-bold text-slate-800">التركيز:</span> ${drug.concentration || 'راجع النشرة'}
+                            </div>
+                            <div class="bg-indigo-50/60 px-2.5 py-1.5 rounded-lg border border-indigo-100/80 text-xs text-indigo-950">
+                                <span class="font-bold text-indigo-800">طريقة الإعطاء:</span> ${drug.route || 'حسب النشرة'}
+                            </div>
+                        </div>
+
+                        <p class="text-xs text-slate-600 line-clamp-2 leading-relaxed">
+                            ${drug.benefits}
+                        </p>
+
+                        <div class="flex flex-wrap gap-1 pt-1">
+                            ${(drug.species || []).map(sp => `<span class="text-[10px] bg-teal-50 text-teal-700 px-2 py-0.5 rounded-md border border-teal-100 font-bold">${sp}</span>`).join('')}
+                        </div>
+                    </div>
+
+                    <div class="bg-slate-50/80 border-t border-slate-100 px-5 py-3 flex items-center justify-between gap-2">
+                        <span class="text-[11px] text-slate-500 font-medium flex items-center gap-1 truncate">
+                            <i class="fa-solid fa-clock text-amber-500"></i>
+                            <span class="truncate">سحب: ${drug.withdrawalMeat || 'محدد'}</span>
+                        </span>
+                        <div class="flex items-center gap-1.5 flex-shrink-0">
+                            <button onclick="quickCalcForDrug('${drug.id}')" title="حاسبة الجرعات" class="p-2 rounded-xl bg-white border border-slate-200 text-teal-700 hover:bg-teal-50 transition text-xs font-semibold">
+                                <i class="fa-solid fa-calculator"></i>
+                            </button>
+                            <button onclick="openDetailModal('${drug.id}')" class="px-3.5 py-1.5 rounded-xl bg-sky-600 hover:bg-sky-700 text-white text-xs font-bold transition shadow-sm flex items-center gap-1.5">
+                                <span>التفاصيل</span>
+                                <i class="fa-solid fa-chevron-left text-[10px]"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                `;
+            }).join('');
+        }
+
+        function updateStats(visibleCount) {
+            document.getElementById('resultsCount').innerText = `يعرض ${visibleCount} من إجمالي ${drugsList.length} مادة/مطعوم`;
+        }
+
+        function toggleFavorite(id) {
+            const drug = drugsList.find(d => d.id === id);
+            if (drug) {
+                drug.isFavorite = !drug.isFavorite;
+                saveToLocalStorage();
+                renderDrugs();
+                showToast(drug.isFavorite ? `تمت إضافة (${drug.tradeName}) للمفضلة` : `تمت إزالة (${drug.tradeName}) من المفضلة`);
+            }
+        }
+
+        function openDetailModal(id) {
+            const drug = drugsList.find(d => d.id === id);
+            if (!drug) return;
+
+            activeDrugForModal = drug;
+
+            document.getElementById('modalTradeName').innerText = drug.tradeName;
+            document.getElementById('modalScientificName').innerText = drug.scientificName;
+            document.getElementById('modalCategoryBadge').innerText = drug.category;
+            document.getElementById('modalFormBadge').innerText = drug.form || 'مستحضر بيطري';
+            document.getElementById('modalSource').innerText = drug.source || 'مرجع رسمي';
+            document.getElementById('modalConcentration').innerText = drug.concentration || 'راجع النشرة الرسمية';
+            document.getElementById('modalRoute').innerText = drug.route || 'راجع النشرة الرسمية';
+            
+            document.getElementById('modalBenefits').innerText = drug.benefits;
+            document.getElementById('modalDosage').innerText = drug.dosage;
+            document.getElementById('modalSideEffects').innerText = drug.sideEffects || 'التزم بتعليمات النشرة المعتمدة.';
+            document.getElementById('modalWithdrawalMeat').innerText = drug.withdrawalMeat || 'غير محدد';
+            document.getElementById('modalWithdrawalMilk').innerText = drug.withdrawalMilk || 'غير محدد';
+
+            const speciesContainer = document.getElementById('modalSpeciesList');
+            speciesContainer.innerHTML = (drug.species || []).map(sp => 
+                `<span class="text-xs bg-teal-100 text-teal-800 px-2 py-0.5 rounded-md font-bold">${sp}</span>`
+            ).join('');
+
+            document.getElementById('detailModal').classList.remove('hidden');
+        }
+
+        function closeDetailModal() {
+            document.getElementById('detailModal').classList.add('hidden');
+            activeDrugForModal = null;
+        }
+
+        function copyDrugDetails() {
+            if (!activeDrugForModal) return;
+            const text = `
+الاسم: ${activeDrugForModal.tradeName} (${activeDrugForModal.scientificName})
+التصنيف: ${activeDrugForModal.category}
+الجهة المرجعية: ${activeDrugForModal.source}
+التركيز: ${activeDrugForModal.concentration}
+الحيوانات المستهدفة: ${(activeDrugForModal.species || []).join('، ')}
+طريقة الإعطاء: ${activeDrugForModal.route}
+دواعي الاستعمال: ${activeDrugForModal.benefits}
+الجرعة والبرنامج: ${activeDrugForModal.dosage}
+فترة السحب: لحم (${activeDrugForModal.withdrawalMeat}) | حليب/بيض (${activeDrugForModal.withdrawalMilk})
+            `.trim();
+
+            const textArea = document.createElement('textarea');
+            textArea.value = text;
+            document.body.appendChild(textArea);
+            textArea.select();
+            try {
+                document.execCommand('copy');
+                showToast('تم نسخ التفاصيل للحافظة بنجاح');
+            } catch (err) {
+                showToast('تعذر النسخ التلقائي');
+            }
+            document.body.removeChild(textArea);
+        }
+
+        function printDrugSheet() {
+            window.print();
+        }
+
+        function openAddModal() {
+            document.getElementById('addModal').classList.remove('hidden');
+        }
+
+        function closeAddModal() {
+            document.getElementById('addModal').classList.add('hidden');
+            document.getElementById('addDrugForm').reset();
+        }
+
+        function saveNewDrug(e) {
+            e.preventDefault();
+
+            const speciesRaw = document.getElementById('addSpecies').value;
+            const allowed = ['دواجن', 'أبقار', 'أغنام'];
+            let speciesArray = speciesRaw
+                ? speciesRaw.split('،').join(',').split(',').map(s => s.trim()).filter(s => allowed.includes(s))
+                : [];
+            if (speciesArray.length === 0) speciesArray = ['أبقار'];
+
+            const newDrug = {
+                id: 'd_' + Date.now(),
+                tradeName: document.getElementById('addTradeName').value.trim(),
+                scientificName: document.getElementById('addSciName').value.trim(),
+                category: document.getElementById('addCategory').value,
+                concentration: document.getElementById('addConcentration').value.trim() || 'حسب النشرة المعتمدة',
+                source: document.getElementById('addSource').value,
+                form: 'مستحضر بيطري',
+                species: speciesArray,
+                route: document.getElementById('addRoute').value.trim(),
+                benefits: document.getElementById('addBenefits').value.trim(),
+                dosage: document.getElementById('addDosage').value.trim(),
+                sideEffects: document.getElementById('addSideEffects').value.trim() || 'التزم بتعليمات النشرة المعتمدة.',
+                withdrawalMeat: document.getElementById('addMeat').value.trim() || 'غير محدد',
+                withdrawalMilk: document.getElementById('addMilk').value.trim() || 'غير محدد',
+                isFavorite: false
+            };
+
+            drugsList.unshift(newDrug);
+            saveToLocalStorage();
+            renderDrugs();
+            populateDosageSelect();
+            closeAddModal();
+            showToast(`تمت إضافة (${newDrug.tradeName}) بنجاح`);
+        }
+
+        function openAddDiseaseModal() {
+            const select = document.getElementById('addDiseaseDrugsSelect');
+            select.innerHTML = drugsList.map(d => `<option value="${d.id}">${d.tradeName} (${d.category})</option>`).join('');
+            document.getElementById('addDiseaseModal').classList.remove('hidden');
+        }
+
+        function closeAddDiseaseModal() {
+            document.getElementById('addDiseaseModal').classList.add('hidden');
+            document.getElementById('addDiseaseForm').reset();
+        }
+
+        function saveNewDisease(e) {
+            e.preventDefault();
+
+            const speciesRaw = document.getElementById('addDiseaseSpecies').value;
+            const allowed = ['دواجن', 'أبقار', 'أغنام'];
+            let speciesArray = speciesRaw
+                ? speciesRaw.split('،').join(',').split(',').map(s => s.trim()).filter(s => allowed.includes(s))
+                : [];
+            if (speciesArray.length === 0) speciesArray = ['أبقار'];
+
+            const select = document.getElementById('addDiseaseDrugsSelect');
+            const selectedDrugIds = Array.from(select.selectedOptions).map(opt => opt.value);
+
+            const newDisease = {
+                id: 'dis_' + Date.now(),
+                name: document.getElementById('addDiseaseName').value.trim(),
+                sciName: document.getElementById('addDiseaseSciName').value.trim(),
+                species: speciesArray,
+                symptoms: document.getElementById('addDiseaseSymptoms').value.trim(),
+                protocol: document.getElementById('addDiseaseProtocol').value.trim(),
+                recommendedDrugIds: selectedDrugIds
+            };
+
+            diseasesList.unshift(newDisease);
+            saveDiseasesToLocalStorage();
+            renderDiseases();
+            closeAddDiseaseModal();
+            showToast(`تمت إضافة المرض (${newDisease.name}) بنجاح`);
+        }
+
+        function openDosageModal() {
+            document.getElementById('dosageModal').classList.remove('hidden');
+        }
+
+        function closeDosageModal() {
+            document.getElementById('dosageModal').classList.add('hidden');
+        }
+
+        function populateDosageSelect() {
+            const select = document.getElementById('calcDrugSelect');
+            select.innerHTML = `<option value="">-- إدخال يدوي --</option>` + 
+                drugsList.map(d => `<option value="${d.id}">${d.tradeName} (${d.concentration})</option>`).join('');
+        }
+
+        function autoFillCalc() {
+            const selectedId = document.getElementById('calcDrugSelect').value;
+            if (!selectedId) return;
+
+            const drug = drugsList.find(d => d.id === selectedId);
+            if (drug) {
+                if (drug.id === 'd_tulathromycin') {
+                    document.getElementById('calcConc').value = 100;
+                    document.getElementById('calcDoseMg').value = 2.5;
+                } else if (drug.id === 'd_florfenicol') {
+                    document.getElementById('calcConc').value = 300;
+                    document.getElementById('calcDoseMg').value = 20;
+                } else if (drug.id === 'd_flunixin') {
+                    document.getElementById('calcConc').value = 50;
+                    document.getElementById('calcDoseMg').value = 2.2;
+                }
+                calculateDosage();
+            }
+        }
+
+        function quickCalcForDrug(id) {
+            openDosageModal();
+            document.getElementById('calcDrugSelect').value = id;
+            autoFillCalc();
+        }
+
+        function calculateDosage() {
+            const weight = parseFloat(document.getElementById('calcWeight').value) || 0;
+            const doseMg = parseFloat(document.getElementById('calcDoseMg').value) || 0;
+            const conc = parseFloat(document.getElementById('calcConc').value) || 0;
+
+            const resultElem = document.getElementById('calcResult');
+            const noteElem = document.getElementById('calcNote');
+
+            if (weight > 0 && doseMg > 0 && conc > 0) {
+                const totalMg = weight * doseMg;
+                const volumeMl = totalMg / conc;
+                resultElem.innerText = `${volumeMl.toFixed(2)} مل`;
+                noteElem.innerText = `إجمالي المادة الفعالة المطلوبة: ${totalMg.toFixed(1)} ملغم`;
+            } else {
+                resultElem.innerText = '0 مل';
+                noteElem.innerText = 'أدخل الوزن والجرعة والتركيز لحساب الحجم المطلوب';
+            }
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            const toastMsg = document.getElementById('toastMessage');
+            toastMsg.innerText = message;
+
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            toast.classList.add('translate-y-0', 'opacity-100');
+
+            setTimeout(() => {
+                toast.classList.remove('translate-y-0', 'opacity-100');
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
